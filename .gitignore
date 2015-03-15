@@ -1,0 +1,4 @@
+_sandbox
+_venv
+*.pyc
+__pycache__

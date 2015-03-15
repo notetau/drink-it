@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <title>highlight</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index_style.css') }}" />
+
+    <style>
+    </style>
+</head>
+<body>
+    <div id="setting_overlay" v-if="flag_setting_overlay" v-transition v-on="click: flip_setting">
+    </div>
+
+    <div id="setting_overlay_content" v-if="flag_setting_overlay">
+        <div style="text-align: right;">
+            <span class="fa fa-close setting_icon" v-on="click: flip_setting"></span>
+        </div>
+        <div class="setting_label">フォントサイズ font-size</div>
+        <div>
+            <input type="radio" name="font_size" value="small" v-model="font_size">
+            small<br/>
+            <input type="radio" name="font_size" value="medium" v-model="font_size">
+            medium<br/>
+            <input type="radio" name="font_size" value="large" v-model="font_size">
+            large<br/>
+        </div>
+    </div>
+
+    <div id="wrapper">
+
+        <div id="title_area">
+            <span id="title">hello world</span>
+            <div style="float: right; padding: 5px;">
+                <i class="fa fa-bars fa-2x setting_icon" v-on="click: flip_setting"></i>
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="ask_area">
+                <div id="input_description">URLを入力してください</div>
+                <input type=text id="url_input" v-on="keypress: enter_url"/><br/>
+                <div id="btn_wrapper">
+                    <button id="convert_btn" v-on="click: send_article_url">取得</button>
+                </div>
+            </div>
+            <div id="article" v-html="article" v-style="font-size: font_size">
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/vue.js') }}">javascriptを有効にしてください</script>
+    <script>
+        var vm = new Vue({
+            el: "body",
+            data: {
+                flag_setting_overlay: false,
+                font_size: "medium",
+                article: "" +
+                "foobar<br />tomato<br />" +
+                "awegawefawefaw fearawfa ojot joejalfea joiewjalfa feafewr " +
+                "fewara feaoj feaghv fjewoa oawefq 3  fewa f v21jof fawkofjo" +
+                "ttewojaofj wa e joje efoego  e fea fewajo"
+            },
+            methods: {
+                enter_url: function(e) {
+                    if (e.which === 13) {
+                        this.send_article_url();
+                    }
+                },
+                send_article_url: function() {
+                    this.article = '<i class="fa fa-spinner fa-pulse fa-fw"></i>loading';
+
+
+                },
+                flip_setting: function() {
+                    this.$data.flag_setting_overlay = !this.$data.flag_setting_overlay;
+                }
+            },
+        });
+    </script>
+</body>
+</html>

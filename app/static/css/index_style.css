@@ -1,0 +1,44 @@
+.drink_count {
+    text-align: right;
+}
+
+[data-v-cloak] { display: none }
+
+.pure-button-twitter {
+    color: #ffffff;
+    padding: 0.2em 0.5em;
+    background: rgb(66, 184, 221);
+}
+
+#header {
+    padding: 10px;
+}
+
+#title {
+    font-size: x-large;
+    font-weight: bold;
+    color: rgb(78, 190, 221);
+}
+
+#drink_table {
+    padding: 20px;
+    margin: 20px;
+}
+
+#operate {
+    margin: 20px;
+}
+
+.drink_name {
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+.drink_count {
+    padding: 10px 20px;
+}
+
+.pure-button-drink {
+    background: rgb(78, 190, 221);
+    margin: 10px;
+}
