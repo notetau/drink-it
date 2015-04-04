@@ -3,9 +3,7 @@
 import os
 import urllib.parse
 import flask
-from flask.ext.sqlalchemy import SQLAlchemy
 from rauth import OAuth1Service
-from rauth.utils import parse_utf8_qsl
 
 from . import model
 
