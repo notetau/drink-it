@@ -43,6 +43,7 @@
     margin: 10px;
 }
 
-.reset-drink-count .reset-drink-count:visited{
-    color: rgb(78, 190, 221);
+.reset-drink-count {
+    color: #1111cc;
+    font-size: small;
 }

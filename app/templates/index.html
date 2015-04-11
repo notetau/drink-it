@@ -20,10 +20,11 @@
             <tr data-v-repeat="drink_list | orderBy 'index'">
                 <td class="drink_name">(% name %)</td>
                 <td class="drink_count">(% count %)</td>
-                <td><button class="pure-button pure-button-drink" data-v-on="click: inc_drink(this)">1 杯</button></td>
                 <td>
-                    <a class="reset-drink-count">もどす</a>
-                    <!--<button class="pure-button pure-button-drink" data-v-on="click: dec_drink(this)">もどす</button>-->
+                    <button class="pure-button pure-button-drink" data-v-on="click: inc_drink(this)">1 杯</button>
+                </td>
+                <td>
+                    <a class="reset-drink-count" data-v-on="click: dec_drink(this);">もどす</a>
                 </td>
             </tr>
         </table>

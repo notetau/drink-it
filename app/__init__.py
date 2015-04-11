@@ -3,18 +3,20 @@
 import os
 import urllib.parse
 import flask
+import logging
 from rauth import OAuth1Service
 
 from . import model
 
 app = flask.Flask(__name__)
 
+app_debug_flag = os.environ["DEBUG_SERVER"] == "TRUE"
+
 app.config.update(
     SECRET_KEY=os.environ["FLASK_SECRET_KEY"],
-    DEBUG = True if os.environ["DEBUG_SERVER"] == "TRUE" else False
+    DEBUG = app_debug_flag
 )
-
-#app.logger.setLevel(flask.logger.DEBUG)
+app.logger.setLevel(logging.DEBUG if app_debug_flag else logging.WARNING)
 
 twitter = OAuth1Service(
     consumer_key=os.environ["TWITTER_CONSUMER_KEY"],
