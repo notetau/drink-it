@@ -4,24 +4,23 @@
     <meta charset="utf-8" />
     <title>drink it ! - 飲んだものを記録しよう -</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index_style.css') }}" />
-
-    <style></style>
 </head>
 <body>
-    <div id="header">
+    <div id="header" class="page-header">
         <span id="title">drink it!</span> - logging drink : 飲んだものを記録しよう - {{ loginout|safe }}
     </div>
-    <hr>
-    <div>
-        <table id="drink_table" data-v-cloak >
-            <tr><td>飲み物</td><td>飲んだ回数</td><td></td></tr>
+    <div class="container">
+        <table class="table" id="drink_table" data-v-cloak >
+            <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
             <tr data-v-repeat="drink_list | orderBy 'index'">
                 <td class="drink_name">(% name %)</td>
                 <td class="drink_count">(% count %)</td>
                 <td>
-                    <button class="pure-button pure-button-drink" data-v-on="click: inc_drink(this)">1 杯</button>
+                    <button data-v-on="click: inc_drink(this)">1 杯</button>
                 </td>
                 <td>
                     <a class="reset-drink-count" data-v-on="click: dec_drink(this);">もどす</a>
@@ -29,7 +28,7 @@
             </tr>
         </table>
     </div>
-    <hr>
+
     <div id="operate">
         飲み物の追加<br/>
         <input type=text id="add_input" data-v-on="keypress: enter_add_drint_input"/>
@@ -37,7 +36,10 @@
     </div>
     <div id="rights"></div>
 
-    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <!--<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
     <script src="{{ url_for('static', filename='js/vue.js') }}">javascriptを有効にしてください</script>
     <script>
         function validate_drink_name(name) {

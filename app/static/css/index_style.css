@@ -1,18 +1,19 @@
+#header {
+    padding: 10px;
+}
+
 .drink_count {
     text-align: right;
 }
 
 [data-v-cloak] { display: none }
-
+/*
 .pure-button-twitter {
     color: #ffffff;
     padding: 0.2em 0.5em;
     background: rgb(66, 184, 221);
-}
+}*/
 
-#header {
-    padding: 10px;
-}
 
 #title {
     font-size: x-large;
