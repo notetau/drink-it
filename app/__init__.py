@@ -14,6 +14,8 @@ app.config.update(
     DEBUG = True if os.environ["DEBUG_SERVER"] == "TRUE" else False
 )
 
+#app.logger.setLevel(flask.logger.DEBUG)
+
 twitter = OAuth1Service(
     consumer_key=os.environ["TWITTER_CONSUMER_KEY"],
     consumer_secret=os.environ["TWITTER_CONSUMER_SECRET"],
@@ -70,18 +72,18 @@ def login_with_twitter():
 def login_with_twitter_callback():
     """ TwitterのOauth認証の結果 """
 
-    flask.flash("#### login_with_twitter_callback ####")
-    request_token, request_token_secret = flask.session["twitter_oauth"]
-
-    creds = {'request_token': request_token,
-            'request_token_secret': request_token_secret}
-    params = {'oauth_verifier': flask.request.args['oauth_verifier']}
-    sess = twitter.get_auth_session(params=params, **creds)
-
-    verify = sess.get("account/verify_credentials.json").json()
-
     try:
-        flask.flash("twitter login success({0},{1})".format(verify["screen_name"], verify["id"]))
+        app.logger.info("#### login_with_twitter_callback ####")
+        request_token, request_token_secret = flask.session["twitter_oauth"]
+
+        creds = {'request_token': request_token,
+                'request_token_secret': request_token_secret}
+        params = {'oauth_verifier': flask.request.args['oauth_verifier']}
+        sess = twitter.get_auth_session(params=params, **creds)
+
+        verify = sess.get("account/verify_credentials.json").json()
+
+        app.logger.info("twitter login success({0},{1})".format(verify["screen_name"], verify["id"]))
 
         new_user = model.User(name = str(verify["id"]), login_type = model.LOGIN_TYPE_TWITTER)
 
@@ -92,7 +94,7 @@ def login_with_twitter_callback():
                                   "type" : new_user.login_type,
                                   "display_name":verify["screen_name"]}
     except:
-        flask.flash("twitter login fail")
+        app.logger.info("twitter login fail")
 
     return flask.redirect("/")
 
@@ -137,5 +139,3 @@ def put_drink(drink_name):
     else:
         # 非ログイン状態
         return "not login", 400
-
-
