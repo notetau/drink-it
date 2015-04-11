@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" type="text/css" href="./static/css/c3.min.css" />
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index_style.css') }}" />
 </head>
@@ -17,8 +18,13 @@
         </div>
     </div>
 
+    <div data-v-if="show_graph_flag">
+        (^^)<button data-v-on="click: hide_graph">閉じる</button>
+        <div data-v-pre id="drink-chart"></div>
+    </div>
+
     <div class="container">
-        <table class="table table-hover" id="drink_table" data-v-cloak >
+        <table class="table" id="drink_table" data-v-cloak >
             <thead>
                 <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
             </thead>
@@ -27,7 +33,8 @@
                     <td class="drink_name">(% name %)</td>
                     <td class="drink_count">(% count %)</td>
                     <td><button class="btn btn-drink" data-v-on="click: inc_drink(this)">1 杯</button></td>
-                    <td><a class="" data-v-on="click: dec_drink(this);">1杯もどす</a></td>
+                    <td><a data-v-on="click: show_graph">グラフ</a></td>
+                    <td><a class="small-text-link" data-v-on="click: dec_drink(this);">1杯もどす</a></td>
                 </tr>
             </tbody>
         </table>
@@ -46,6 +53,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
+    <script src="./static/js/d3.min.js"></script>
+    <script src="./static/js/c3.min.js"></script>
+
     <script src="{{ url_for('static', filename='js/vue.js') }}">javascriptを有効にしてください</script>
     <script>
         function validate_drink_name(name) {
@@ -54,16 +64,39 @@
             return name
         }
 
+        function draw_graph() {
+            var chart = c3.generate({
+                bindto: '#drink-chart',
+                data: {
+                    columns: [
+                        ['total', 30, 40, 100, 400, 550, 650],
+                    ],
+                    types: {
+                        total: "area",
+                    },
+                },
+            });
+        }
+
         Vue.config.prefix = "data-v-";
         Vue.config.delimiters = ['(%', '%)'];
         var vm = new Vue({
             el: "body",
             data: {
+                show_graph_flag: false,
                 login_flag: false,
                 drink_list:
                 {{ initial_list|safe }}
             },
             methods: {
+                show_graph: function() {
+                    this.show_graph_flag = true;
+                    Vue.nextTick(draw_graph);
+                },
+                hide_graph: function() {
+                    this.show_graph_flag = false;
+                },
+
                 enter_add_drint_input: function(e) {
                     if (e.which === 13) {
                         this.add_drink();
