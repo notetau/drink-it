@@ -1,12 +1,19 @@
+
+[data-v-cloak] { display: none }
+
 #header {
     padding: 10px;
 }
+
+.table tbody>tr>td {
+    vertical-align: middle;
+}
+
 
 .drink_count {
     text-align: right;
 }
 
-[data-v-cloak] { display: none }
 /*
 .pure-button-twitter {
     color: #ffffff;

@@ -10,22 +10,30 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index_style.css') }}" />
 </head>
 <body>
-    <div id="header" class="page-header">
-        <span id="title">drink it!</span> - logging drink : 飲んだものを記録しよう - {{ loginout|safe }}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <span id="title">drink it!</span> logging drink : 飲んだものを記録しよう
+            <span class="pull-right"> {{ loginout|safe }} </span>
+        </div>
     </div>
+
     <div class="container">
         <table class="table" id="drink_table" data-v-cloak >
-            <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
-            <tr data-v-repeat="drink_list | orderBy 'index'">
-                <td class="drink_name">(% name %)</td>
-                <td class="drink_count">(% count %)</td>
-                <td>
-                    <button data-v-on="click: inc_drink(this)">1 杯</button>
-                </td>
-                <td>
-                    <a class="reset-drink-count" data-v-on="click: dec_drink(this);">もどす</a>
-                </td>
-            </tr>
+            <thead>
+                <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
+            </thead>
+            <tbody>
+                <tr data-v-repeat="drink_list | orderBy 'index'">
+                    <td class="drink_name">(% name %)</td>
+                    <td class="drink_count">(% count %)</td>
+                    <td>
+                        <button class="btn btn-primary" data-v-on="click: inc_drink(this)">1 杯</button>
+                    </td>
+                    <td>
+                        <a class="reset-drink-count" data-v-on="click: dec_drink(this);">もどす</a>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 
