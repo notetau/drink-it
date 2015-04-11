@@ -18,6 +18,7 @@ app.config.update(
 )
 app.logger.setLevel(logging.DEBUG if app_debug_flag else logging.WARNING)
 
+# twitter経由のログイン
 twitter = OAuth1Service(
     consumer_key=os.environ["TWITTER_CONSUMER_KEY"],
     consumer_secret=os.environ["TWITTER_CONSUMER_SECRET"],
@@ -28,7 +29,7 @@ twitter = OAuth1Service(
     base_url='https://api.twitter.com/1.1/'
 )
 
-# データベースの準備
+# データベースの起動
 model.model_init()
 
 # ルーティング
@@ -60,7 +61,6 @@ def login_with_twitter():
     """ TwitterのOauth認証 """
     oauth_callback = flask.url_for('login_with_twitter_callback', _external=True)
     params = {'oauth_callback': oauth_callback}
-
     try:
         request_token, request_token_secret = twitter.get_request_token()
         flask.session["twitter_oauth"] = (request_token, request_token_secret)
@@ -73,7 +73,6 @@ def login_with_twitter():
 @app.route("/login/twitter/callback")
 def login_with_twitter_callback():
     """ TwitterのOauth認証の結果 """
-
     try:
         app.logger.info("#### login_with_twitter_callback ####")
         request_token, request_token_secret = flask.session["twitter_oauth"]
@@ -103,7 +102,7 @@ def login_with_twitter_callback():
 @app.route('/logout')
 def logout():
     flask.session.pop('login', None) # ログイン状態を解除
-    flask.flash('You were signed out')
+    app.logger.info('You were signed out')
     return flask.redirect(flask.request.referrer or flask.url_for('index'))
 
 
@@ -136,7 +135,7 @@ def put_drink(drink_name):
         if model.add_drink_history(flask.session["login"]["user_id"], drink_name, count):
             return "OK", 200
         else:
-            flask.flash("DB error")
+            app.logger.error("DB error")
             return "db error", 400
     else:
         # 非ログイン状態

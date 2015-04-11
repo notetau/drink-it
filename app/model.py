@@ -95,7 +95,7 @@ def _is_user_already_exists(name, login_type):
 def add_user(user):
     """  user_id を返す """
     if not isinstance(user, User):
-        flask.flash("add invalid user (type error)")
+        app.logger.warning("adding invalid user (type error)")
         raise Exception;
 
     user_id = _is_user_already_exists(user.name, user.login_type)
