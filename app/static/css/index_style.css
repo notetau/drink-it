@@ -5,14 +5,36 @@
     padding: 10px;
 }
 
+#title {
+    font-size: x-large;
+    font-weight: bold;
+    color: rgb(78, 190, 221);
+    display: inline-block;
+    padding: 0 10px 0 0;
+}
+
 .table tbody>tr>td {
     vertical-align: middle;
 }
 
-
 .drink_count {
     text-align: right;
 }
+
+#drink_table {
+    /*padding: 20px;
+    margin: 20px;*/
+}
+
+.btn-drink {
+    background: rgb(78, 190, 221);
+    color: #ffffff;
+}
+.btn-drink:hover, .btn-drink:focus, .btn-drink:active {
+    background: rgb(58, 180, 204);
+    color: #ffffff;
+}
+
 
 /*
 .pure-button-twitter {
@@ -22,16 +44,7 @@
 }*/
 
 
-#title {
-    font-size: x-large;
-    font-weight: bold;
-    color: rgb(78, 190, 221);
-}
 
-#drink_table {
-    padding: 20px;
-    margin: 20px;
-}
 
 #operate {
     margin: 20px;

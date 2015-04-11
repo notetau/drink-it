@@ -18,7 +18,7 @@
     </div>
 
     <div class="container">
-        <table class="table" id="drink_table" data-v-cloak >
+        <table class="table table-hover" id="drink_table" data-v-cloak >
             <thead>
                 <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
             </thead>
@@ -27,7 +27,7 @@
                     <td class="drink_name">(% name %)</td>
                     <td class="drink_count">(% count %)</td>
                     <td>
-                        <button class="btn btn-primary" data-v-on="click: inc_drink(this)">1 杯</button>
+                        <button class="btn btn-drink" data-v-on="click: inc_drink(this)">1 杯</button>
                     </td>
                     <td>
                         <a class="reset-drink-count" data-v-on="click: dec_drink(this);">もどす</a>
@@ -37,12 +37,14 @@
         </table>
     </div>
 
-    <div id="operate">
-        飲み物の追加<br/>
-        <input type=text id="add_input" data-v-on="keypress: enter_add_drint_input"/>
-        <button data-v-on="click: add_drink">追加</button>
+    <div id="operate" class="form-inline">
+        <div class="form-group">
+            <label class="control-label">飲み物の追加</label>
+            <input type=text class="form-control" id="add_input" placeholder="飲み物を入力"
+                data-v-on="keypress: enter_add_drint_input"/>
+        </div>
+        <button class="btn btn-drink" data-v-on="click: add_drink">追加</button>
     </div>
-    <div id="rights"></div>
 
     <!--<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
