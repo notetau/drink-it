@@ -5,12 +5,13 @@ import html
 import json
 import flask
 import sqlalchemy as sql
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 
 LOGIN_TYPE_SPECIAL = 0
 LOGIN_TYPE_TWITTER = 1
 
-Base = sql.ext.declarative.declarative_base()
+Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"

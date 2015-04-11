@@ -21,7 +21,10 @@
                 <td class="drink_name">(% name %)</td>
                 <td class="drink_count">(% count %)</td>
                 <td><button class="pure-button pure-button-drink" data-v-on="click: inc_drink(this)">1 杯</button></td>
-                <td><button class="pure-button pure-button-drink" data-v-on="click: dec_drink(this)">もどす</button></td>
+                <td>
+                    <a class="reset-drink-count">もどす</a>
+                    <!--<button class="pure-button pure-button-drink" data-v-on="click: dec_drink(this)">もどす</button>-->
+                </td>
             </tr>
         </table>
     </div>
