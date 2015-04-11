@@ -35,6 +35,14 @@
     color: #ffffff;
 }
 
+.btn-twitter {
+    background: rgb(78, 190, 221);
+    color: #ffffff;
+}
+.btn-twitter:hover, .btn-twitter:focus, .btn-twitter:active {
+    background: rgb(58, 180, 204);
+    color: #ffffff;
+}
 
 /*
 .pure-button-twitter {

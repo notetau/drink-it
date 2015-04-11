@@ -42,13 +42,14 @@ def before_request():
 def index():
     """ トップページ　ログイン状態か否かで表示を変える """
     loginout = '''
-        <a href="./login/twitter" class="pure-button pure-button-twitter">
-        <i class="fa fa-twitter"></i> sign in with <strong>Twitter</strong></a>'''
+        <a href="./login/twitter">
+        <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
+        </a>'''
     init_list = ""
 
     if "login" in flask.session:
         if flask.session["login"]["type"] == model.LOGIN_TYPE_TWITTER:
-            loginout = 'login: {0} <a href="./logout">ログアウト</a>'.format(
+            loginout = '{0} <a href="./logout">ログアウト</a>'.format(
                 flask.session["login"]["display_name"])
 
         init_list = model.get_drink_list_by_html(flask.session["login"]["user_id"])
