@@ -73,16 +73,16 @@ def index():
         <a href="./login/twitter">
         <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
         </a>'''
-    init_list = ""
+    #init_list = ""
 
     if UserInfo.is_login():
         if UserInfo.get_login_type() == model.LOGIN_TYPE_TWITTER:
             loginout = '{0} <a href="./logout">ログアウト</a>'.format(
                 UserInfo.get_user_display_name())
 
-        init_list = model.get_drink_list_by_html(UserInfo.get_user_id())
+        #init_list = model.get_drink_list_by_html(UserInfo.get_user_id())
 
-    return flask.render_template("index.html", loginout=loginout, initial_list=init_list)
+    return flask.render_template("index.html", loginout=loginout)
 
 
 @app.route("/login/twitter")
@@ -146,7 +146,6 @@ def api_add_drink():
         data_dict["name"] = drink_name
         return flask.jsonify(data_dict), 200
     else:
-        # 非ログイン状態
         return "not login", 403
 
 
@@ -157,27 +156,31 @@ def put_drink(drink_id):
     count = int(flask.request.form['update_count'])
 
     if UserInfo.is_login():
-
         print(UserInfo.get_user_id(), drink_id, count)
-
         if model.add_drink_history(UserInfo.get_user_id(), drink_id, count):
             return "OK", 200
         else:
             app.logger.error("DB error")
             return "db error", 400
     else:
-        # 非ログイン状態
         return "not login", 400
 
 
 @app.route("/api/<drink_id>/stat", methods=["GET"])
 def get_drink_stat(drink_id):
     """飲んだ履歴の取得"""
-
     if UserInfo.is_login():
         data = model.get_drink_history_stat(UserInfo.get_user_id(), drink_id)
         return data, 200
     else:
         return "not login", 400
-
     return "[]", 200
+
+@app.route("/api/all_drink_list", methods=["GET"])
+def get_all_drink_list():
+    """飲み物一覧を取得 json format"""
+    if UserInfo.is_login():
+        all_drink = model.get_drink_list_by_html(UserInfo.get_user_id())
+        return all_drink, 200
+    else:
+        return "[]", 200

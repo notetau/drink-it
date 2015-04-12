@@ -52,7 +52,6 @@
         </div>
     </div>
 
-    <!--<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
@@ -61,12 +60,6 @@
 
     <script src="{{ url_for('static', filename='js/vue.js') }}">javascriptを有効にしてください</script>
     <script>
-        function validate_drink_name(name) {
-            name = name.replace(/^[\s　]+|[\s　]+$/g, "");
-            name = name.replace(/[<>/]/g, "");
-            return name
-        }
-
         function draw_drink_stat_graph(columns) {
             var chart = c3.generate({
                 bindto: '#drink-chart',
@@ -92,8 +85,21 @@
                 show_graph_flag: false,
                 name_graph_displayed: "",
                 login_flag: false,
-                drink_list:
-                {{ initial_list|safe }}
+                drink_list: []
+            },
+            ready: function() {
+                var self = this;
+                $.ajax({
+                    type: "GET",
+                    url: "api/all_drink_list",
+                }).done(function(data) {
+                    init_list = JSON.parse(data)
+                    for (var i = 0; i < init_list.length; i++) {
+                        self.$data.drink_list.push(init_list[i]);
+                    }
+                }).fail(function(data) {
+                    alert("なんかエラーです。すんません。");
+                });
             },
             methods: {
                 show_graph: function(drink) {
@@ -130,7 +136,7 @@
                     drink.count += count;
                     $.ajax({
                         type: "PUT",
-                        url: "api/drink/" + drink.drink_id, //validate_drink_name(drink.name),
+                        url: "api/drink/" + drink.drink_id,
                         data: "update_count=" + ("" + count)
                     }).done(function(data) {
                         console.log(data);
@@ -149,13 +155,12 @@
                 add_drink: function() {
                     var drink_name = validate_drink_name($("#add_input").val());
                     if (!drink_name) { return; }
-
+                    console.log(drink_name);
                     var data = {drink_name: drink_name};
 
                     var self = this;
                     $.ajax({
-                        type: "POST",
-                        url: "api/add_drink",
+                        type: "POST", url: "api/add_drink",
                         data: data,
                     }).done(function(ret, status, xhr) {
                         if (xhr.status === 200) {
@@ -164,10 +169,10 @@
                             console.log(ret.name);
                             if (ret.status == "added") {
                                 self.drink_list.push({
-                                    name:ret.name,
+                                    name: ret.name,
                                     count: 0,
                                     index: ret.index,
-                                    drink_id:ret.drink_id
+                                    drink_id: ret.drink_id
                                 });
                             }
                         }
@@ -181,6 +186,7 @@
                 },
             },
         });
+
     </script>
 </body>
 </html>
