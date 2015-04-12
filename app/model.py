@@ -160,7 +160,7 @@ def append_drink_list(user_id, drink_name):
         db.add(drink_list)
         db.commit()
 
-        return {"status":"added", "index": drink_list.index}
+        return {"status":"added", "drink_id": drink_list.drink_id, "index": drink_list.index}
     finally:
         if db is not None:
             db.close()
@@ -174,10 +174,9 @@ def get_drink_list_by_html(user_id):
         db = make_session()
 
         """ 生成したいSQLはこんな感じ
-        SELECT drinks.name , ifnull(sum(history.count), 0), drink_list.index
+        SELECT drinks.name , ifnull(sum(history.count), 0), drink_list.index, drink.drink_id
         FROM drink_list
-        JOIN drinks
-            ON drinks.drink_id = drink_list.drink_id
+        JOIN drinks ON drinks.drink_id = drink_list.drink_id
         LEFT OUTER JOIN history
             ON drink_list.user_id = history.user_id AND drink_list.drink_id = history.drink_id
         WHERE drink_list.user_id = 1
@@ -185,7 +184,8 @@ def get_drink_list_by_html(user_id):
 
         ret = db.query(Drink.name,
                        sql.func.ifnull(sql.func.sum(History.count), 0),
-                       DrinkList.index) \
+                       DrinkList.index,
+                       Drink.drink_id) \
                 .select_from(DrinkList) \
                 .join(Drink) \
                 .outerjoin(History,
@@ -199,7 +199,8 @@ def get_drink_list_by_html(user_id):
             ret_obj.append(
                 {"name": str(row[0]),
                  "count":int(row[1]),
-                 "index":int(row[2])})
+                 "index":int(row[2]),
+                 "drink_id": int(row[3])})
 
         print(json.dumps(ret_obj))
         return json.dumps(ret_obj)

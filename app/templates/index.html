@@ -32,8 +32,8 @@
                 <tr data-v-repeat="drink_list | orderBy 'index'">
                     <td class="drink_name">(% name %)</td>
                     <td class="drink_count">(% count %)</td>
-                    <td><button class="btn btn-drink" data-v-on="click: inc_drink(this)">1 杯</button></td>
-                    <td><a data-v-on="click: show_graph">グラフ</a></td>
+                    <td><button class="btn btn-drink" data-v-on="click: inc_drink(this);">1 杯</button></td>
+                    <td><a data-v-on="click: show_graph(this);">グラフ</a></td>
                     <td><a class="small-text-link" data-v-on="click: dec_drink(this);">1杯もどす</a></td>
                 </tr>
             </tbody>
@@ -92,11 +92,11 @@
                 {{ initial_list|safe }}
             },
             methods: {
-                show_graph: function() {
+                show_graph: function(drink) {
                     this.show_graph_flag = true;
                     //Vue.nextTick(draw_drink_stat_graph);
 
-                    var drink_id = 1;
+                    var drink_id = drink.drink_id;
 
                     $.ajax({
                         type: "GET",
@@ -159,7 +159,12 @@
                             console.log(ret.status);
                             console.log(ret.name);
                             if (ret.status == "added") {
-                                self.drink_list.push({name:ret.name, count: 0, index: ret.index})
+                                self.drink_list.push({
+                                    name:ret.name,
+                                    count: 0,
+                                    index: ret.index,
+                                    drink_id:ret.drink_id
+                                });
                             }
                         }
                     }).fail(function(xhr) {
