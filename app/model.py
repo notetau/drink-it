@@ -172,16 +172,6 @@ def get_drink_list_by_json(user_id):
     db = None
     try:
         db = make_session()
-
-        """ 生成したいSQLはこんな感じ
-        SELECT drinks.name , ifnull(sum(history.count), 0), drink_list.index, drink.drink_id
-        FROM drink_list
-        JOIN drinks ON drinks.drink_id = drink_list.drink_id
-        LEFT OUTER JOIN history
-            ON drink_list.user_id = history.user_id AND drink_list.drink_id = history.drink_id
-        WHERE drink_list.user_id = 1
-        GROUP BY drink_list.drink_id"""
-
         ret = db.query(Drink.name,
                        sql.func.ifnull(sql.func.sum(History.count), 0),
                        DrinkList.index,
@@ -193,7 +183,6 @@ def get_drink_list_by_json(user_id):
                       DrinkList.drink_id == History.drink_id)) \
                 .filter(DrinkList.user_id == user_id) \
                 .group_by(Drink.drink_id).all()
-
         ret_obj = []
         for row in ret:
             ret_obj.append(
@@ -201,13 +190,12 @@ def get_drink_list_by_json(user_id):
                  "count":int(row[1]),
                  "index":int(row[2]),
                  "drink_id": int(row[3])})
-
         print(json.dumps(ret_obj))
         return json.dumps(ret_obj)
-
     finally:
         if db is not None:
             db.close()
+
 
 def add_drink_history(user_id, drink_id, count):
     """ 飲んだ記録をつける 正常に処理できれば True を返す """

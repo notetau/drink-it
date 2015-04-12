@@ -135,8 +135,8 @@ def logout():
     return flask.redirect(flask.request.referrer or flask.url_for('index'))
 
 
-@app.route("/api/add_drink", methods=["POST"])
-def api_add_drink():
+@app.route("/api/add_new_drink", methods=["POST"])
+def api_add_new_drink():
     """ 管理する飲み物を追加する"""
     if UserInfo.is_login():
         if "drink_name" not in flask.request.form:

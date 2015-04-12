@@ -7,8 +7,7 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="./static/css/c3.min.css" />
-    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index_style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="./static/css/index_style.css" />
 </head>
 <body>
     <div class="panel panel-default">
@@ -19,7 +18,7 @@
     </div>
 
     <div id="stat-graph" data-v-if="show_graph_flag">
-        (% name_graph_displayed %) [30 days]
+        (% name_graph_displayed %) [30 days]　<span data-v-show="graph_loading_flag">読み込み中</span>
         <button data-v-on="click: hide_graph">閉じる</button>
         <div data-v-pre>
             <div id="drink-chart"></div>
@@ -35,9 +34,9 @@
                 <tr data-v-repeat="drink_list | orderBy 'index'">
                     <td class="drink_name">(% name %)</td>
                     <td class="drink_count">(% count %)</td>
-                    <td><button class="btn btn-drink" data-v-on="click: inc_drink(this);">1 杯</button></td>
+                    <td><button class="btn btn-drink" data-v-on="click: inc_drink_count(this);">1 杯</button></td>
                     <td><a data-v-on="click: show_graph(this);">グラフ</a></td>
-                    <td><a class="small-text-link" data-v-on="click: dec_drink(this);">1杯もどす</a></td>
+                    <td><a class="small-text-link" data-v-on="click: dec_drink_count(this);">1杯もどす</a></td>
                 </tr>
             </tbody>
         </table>
@@ -48,7 +47,7 @@
             <label class="control-label">飲み物の追加</label>
             <input type=text class="form-control" id="add_input" placeholder="飲み物を入力"
                 data-v-on="keypress: enter_add_drint_input"/>
-            <button class="btn btn-drink" data-v-on="click: add_drink">追加</button>
+            <button class="btn btn-drink" data-v-on="click: add_new_drink">追加</button>
         </div>
     </div>
 
@@ -57,8 +56,7 @@
 
     <script src="./static/js/d3.min.js"></script>
     <script src="./static/js/c3.min.js"></script>
-
-    <script src="{{ url_for('static', filename='js/vue.js') }}">javascriptを有効にしてください</script>
+    <script src="./static/js/vue.js">javascriptを有効にしてください</script>
     <script>
         function draw_drink_stat_graph(columns) {
             var chart = c3.generate({
@@ -66,13 +64,16 @@
                 data: {
                     x: "x",
                     columns: columns,
-                    types: { count: "area", },
+                    types: { count: "line", },
                 },
                 axis: {
                     x: {
                         type: "timeseries",
                         tick: { format: "%Y-%m-%d" }
                     }
+                },
+                onrendered: function() {
+                    vm.$data.graph_loading_flag = false;
                 }
             });
         }
@@ -83,6 +84,7 @@
             el: "body",
             data: {
                 show_graph_flag: false,
+                graph_loading_flag: false,
                 name_graph_displayed: "",
                 login_flag: false,
                 drink_list: []
@@ -103,7 +105,9 @@
             },
             methods: {
                 show_graph: function(drink) {
+                    var self = this;
                     this.show_graph_flag = true;
+                    this.graph_loading_flag = true;
                     this.name_graph_displayed = drink.name;
 
                     var drink_id = drink.drink_id;
@@ -115,6 +119,8 @@
                         console.log("api/1/stat ==\n" + data);
                         draw_drink_stat_graph(JSON.parse(data));
                     }).fail(function(data) {
+                        self.show_graph_flag = false;
+                        self.graph_loading_flag = false;
                         alert("なんかエラーです。すんません。");
                     });
                 },
@@ -124,7 +130,7 @@
 
                 enter_add_drint_input: function(e) {
                     if (e.which === 13) {
-                        this.add_drink();
+                        this.add_new_drink();
                     }
                 },
                 _update_drink_count: function(drink, count) {
@@ -145,14 +151,14 @@
                         drink.count -= count;
                     });
                 },
-                inc_drink: function(drink) {
+                inc_drink_count: function(drink) {
                     this._update_drink_count(drink, 1);
                 },
-                dec_drink: function(drink) {
+                dec_drink_count: function(drink) {
                     this._update_drink_count(drink, -1);
                 },
 
-                add_drink: function() {
+                add_new_drink: function() {
                     var drink_name = validate_drink_name($("#add_input").val());
                     if (!drink_name) { return; }
                     console.log(drink_name);
@@ -160,7 +166,7 @@
 
                     var self = this;
                     $.ajax({
-                        type: "POST", url: "api/add_drink",
+                        type: "POST", url: "api/add_new_drink",
                         data: data,
                     }).done(function(ret, status, xhr) {
                         if (xhr.status === 200) {
