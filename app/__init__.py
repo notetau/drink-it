@@ -80,7 +80,7 @@ def index():
             loginout = '{0} <a href="./logout">ログアウト</a>'.format(
                 UserInfo.get_user_display_name())
 
-        #init_list = model.get_drink_list_by_html(UserInfo.get_user_id())
+        #init_list = model.get_drink_list_by_json(UserInfo.get_user_id())
 
     return flask.render_template("index.html", loginout=loginout)
 
@@ -180,7 +180,7 @@ def get_drink_stat(drink_id):
 def get_all_drink_list():
     """飲み物一覧を取得 json format"""
     if UserInfo.is_login():
-        all_drink = model.get_drink_list_by_html(UserInfo.get_user_id())
+        all_drink = model.get_drink_list_by_json(UserInfo.get_user_id())
         return all_drink, 200
     else:
         return "[]", 200

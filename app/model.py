@@ -165,7 +165,7 @@ def append_drink_list(user_id, drink_name):
         if db is not None:
             db.close()
 
-def get_drink_list_by_html(user_id):
+def get_drink_list_by_json(user_id):
     """ 現在の飲み物リストを生成する
         json文字列を返す
     """
