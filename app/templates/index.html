@@ -18,9 +18,12 @@
         </div>
     </div>
 
-    <div data-v-if="show_graph_flag">
-        (^^)<button data-v-on="click: hide_graph">閉じる</button>
-        <div data-v-pre id="drink-chart"></div>
+    <div id="stat-graph" data-v-if="show_graph_flag">
+        (% name_graph_displayed %) [30 days]
+        <button data-v-on="click: hide_graph">閉じる</button>
+        <div data-v-pre>
+            <div id="drink-chart"></div>
+        </div>
     </div>
 
     <div class="container">
@@ -87,6 +90,7 @@
             el: "body",
             data: {
                 show_graph_flag: false,
+                name_graph_displayed: "",
                 login_flag: false,
                 drink_list:
                 {{ initial_list|safe }}
@@ -94,7 +98,7 @@
             methods: {
                 show_graph: function(drink) {
                     this.show_graph_flag = true;
-                    //Vue.nextTick(draw_drink_stat_graph);
+                    this.name_graph_displayed = drink.name;
 
                     var drink_id = drink.drink_id;
 
