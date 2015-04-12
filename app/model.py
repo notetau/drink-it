@@ -215,7 +215,7 @@ def add_drink_history(user_id, drink_id, count):
             db.close()
 
 def get_drink_history_stat(user_id, drink_id, range_type="30day"):
-
+    """飲んだ履歴 json文字列を返す"""
     stat = []
     db = None
     try:

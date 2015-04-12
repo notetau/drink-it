@@ -73,14 +73,10 @@ def index():
         <a href="./login/twitter">
         <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
         </a>'''
-    #init_list = ""
-
     if UserInfo.is_login():
         if UserInfo.get_login_type() == model.LOGIN_TYPE_TWITTER:
             loginout = '{0} <a href="./logout">ログアウト</a>'.format(
                 UserInfo.get_user_display_name())
-
-        #init_list = model.get_drink_list_by_json(UserInfo.get_user_id())
 
     return flask.render_template("index.html", loginout=loginout)
 
@@ -110,18 +106,12 @@ def login_with_twitter_callback():
                 'request_token_secret': request_token_secret}
         params = {'oauth_verifier': flask.request.args['oauth_verifier']}
         sess = twitter.get_auth_session(params=params, **creds)
-
         verify = sess.get("account/verify_credentials.json").json()
-
         app.logger.info("twitter login success({0},{1})".format(verify["screen_name"], verify["id"]))
-
         new_user = model.User(name = str(verify["id"]), login_type = model.LOGIN_TYPE_TWITTER)
-
         user_id = model.add_user(new_user)
-
         # ログイン状態をセッションに保存
         UserInfo.login(user_id, new_user.login_type, verify["screen_name"])
-
     except:
         app.logger.info("twitter login fail")
 
@@ -175,6 +165,7 @@ def get_drink_stat(drink_id):
     else:
         return "not login", 400
     return "[]", 200
+
 
 @app.route("/api/all_drink_list", methods=["GET"])
 def get_all_drink_list():

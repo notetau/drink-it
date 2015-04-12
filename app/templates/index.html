@@ -17,67 +17,49 @@
         </div>
     </div>
 
-    <div id="stat-graph" data-v-if="show_graph_flag">
-        (% name_graph_displayed %) [30 days]　<span data-v-show="graph_loading_flag">読み込み中</span>
-        <button data-v-on="click: hide_graph">閉じる</button>
-        <div data-v-pre>
-            <div id="drink-chart"></div>
+    <div id="main_area"  data-v-cloak>
+        <div id="stat-graph" data-v-if="show_graph_flag">
+            (% name_graph_displayed %) [30 days]　<span data-v-show="graph_loading_flag">読み込み中</span>
+            <button data-v-on="click: hide_graph">閉じる</button>
+            <div data-v-pre>
+                <div id="drink-chart"></div>
+            </div>
+            <hr />
         </div>
-    </div>
 
-    <div class="container">
-        <table class="table" id="drink_table" data-v-cloak >
-            <thead>
-                <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
-            </thead>
-            <tbody>
-                <tr data-v-repeat="drink_list | orderBy 'index'">
-                    <td class="drink_name">(% name %)</td>
-                    <td class="drink_count">(% count %)</td>
-                    <td><button class="btn btn-drink" data-v-on="click: inc_drink_count(this);">1 杯</button></td>
-                    <td><a data-v-on="click: show_graph(this);">グラフ</a></td>
-                    <td><a class="small-text-link" data-v-on="click: dec_drink_count(this);">1杯もどす</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <div class="container">
+            <table class="table" id="drink_table">
+                <thead>
+                    <tr><td>飲み物</td><td>飲んだ回数</td><td></td><td></td></tr>
+                </thead>
+                <tbody>
+                    <tr data-v-repeat="drink_list | orderBy 'index'">
+                        <td class="drink_name">(% name %)</td>
+                        <td class="drink_count">(% count %)</td>
+                        <td><button class="btn btn-drink" data-v-on="click: inc_drink_count(this);">1 杯</button></td>
+                        <td><a data-v-on="click: show_graph(this);">グラフ</a></td>
+                        <td><a class="small-text-link" data-v-on="click: dec_drink_count(this);">1杯もどす</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div id="operate" class="form-inline">
-        <div class="form-group">
-            <label class="control-label">飲み物の追加</label>
-            <input type=text class="form-control" id="add_input" placeholder="飲み物を入力"
-                data-v-on="keypress: enter_add_drint_input"/>
-            <button class="btn btn-drink" data-v-on="click: add_new_drink">追加</button>
+        <div id="operate" class="form-inline">
+            <div class="form-group">
+                <label class="control-label">飲み物の追加</label>
+                <input type=text class="form-control" id="add_input" placeholder="飲み物を入力"
+                    data-v-on="keypress: enter_add_drint_input"/>
+                <button class="btn btn-drink" data-v-on="click: add_new_drink">追加</button>
+            </div>
         </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-
-    <script src="./static/js/d3.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="./static/js/c3.min.js"></script>
     <script src="./static/js/vue.js">javascriptを有効にしてください</script>
     <script>
-        function draw_drink_stat_graph(columns) {
-            var chart = c3.generate({
-                bindto: '#drink-chart',
-                data: {
-                    x: "x",
-                    columns: columns,
-                    types: { count: "line", },
-                },
-                axis: {
-                    x: {
-                        type: "timeseries",
-                        tick: { format: "%Y-%m-%d" }
-                    }
-                },
-                onrendered: function() {
-                    vm.$data.graph_loading_flag = false;
-                }
-            });
-        }
-
         Vue.config.prefix = "data-v-";
         Vue.config.delimiters = ['(%', '%)'];
         var vm = new Vue({
@@ -117,7 +99,24 @@
                         url: "api/" + drink_id + "/stat",
                     }).done(function(data) {
                         console.log("api/1/stat ==\n" + data);
-                        draw_drink_stat_graph(JSON.parse(data));
+                        var chart = c3.generate({
+                            bindto: '#drink-chart',
+                            data: {
+                                x: "x",
+                                columns: JSON.parse(data),
+                                types: { count: "line", },
+                            },
+                            legend: { hide:true },
+                            axis: {
+                                x: {
+                                    type: "timeseries",
+                                    tick: { format: "%Y-%m-%d" }
+                                }
+                            },
+                            onrendered: function() {
+                                vm.$data.graph_loading_flag = false;
+                            }
+                        });
                     }).fail(function(data) {
                         self.show_graph_flag = false;
                         self.graph_loading_flag = false;
@@ -132,6 +131,12 @@
                     if (e.which === 13) {
                         this.add_new_drink();
                     }
+                },
+                inc_drink_count: function(drink) {
+                    this._update_drink_count(drink, 1);
+                },
+                dec_drink_count: function(drink) {
+                    this._update_drink_count(drink, -1);
                 },
                 _update_drink_count: function(drink, count) {
                     if (count == 0) { return; }
@@ -150,12 +155,6 @@
                         alert("なんかエラーです。すんません。");
                         drink.count -= count;
                     });
-                },
-                inc_drink_count: function(drink) {
-                    this._update_drink_count(drink, 1);
-                },
-                dec_drink_count: function(drink) {
-                    this._update_drink_count(drink, -1);
                 },
 
                 add_new_drink: function() {
@@ -192,7 +191,6 @@
                 },
             },
         });
-
     </script>
 </body>
 </html>
