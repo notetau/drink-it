@@ -209,12 +209,12 @@ def get_drink_list_by_html(user_id):
         if db is not None:
             db.close()
 
-def add_drink_history(user_id, drink_name, count):
+def add_drink_history(user_id, drink_id, count):
     """ 飲んだ記録をつける 正常に処理できれば True を返す """
     db = None
     try:
         db = make_session()
-        drink_id = db.query(Drink.drink_id).filter(Drink.name == drink_name).first()[0]
+        #drink_id = db.query(Drink.drink_id).filter(Drink.name == drink_name).first()[0]
         hist = History(
             user_id=user_id, drink_id=drink_id, count=count, datetime=datetime.datetime.now())
         db.add(hist)

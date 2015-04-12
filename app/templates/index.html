@@ -130,7 +130,7 @@
                     drink.count += count;
                     $.ajax({
                         type: "PUT",
-                        url: "api/drink/" + validate_drink_name(drink.name),
+                        url: "api/drink/" + drink.drink_id, //validate_drink_name(drink.name),
                         data: "update_count=" + ("" + count)
                     }).done(function(data) {
                         console.log(data);

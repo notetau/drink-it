@@ -32,6 +32,34 @@ twitter = OAuth1Service(
 # データベースの起動
 model.model_init()
 
+class UserInfo:
+    @staticmethod
+    def is_login():
+        return "login" in flask.session
+
+    @staticmethod
+    def login(user_id, login_type, display_name):
+        flask.session["login"] = {"user_id" : user_id,
+                                  "type" : login_type,
+                                  "display_name" : display_name}
+    @staticmethod
+    def logout():
+        flask.session.pop('login', None)
+
+    @staticmethod
+    def get_login_type():
+        return flask.session["login"]["type"]
+
+    @staticmethod
+    def get_user_display_name():
+        return flask.session["login"]["display_name"]
+
+    @staticmethod
+    def get_user_id():
+        return flask.session["login"]["user_id"]
+
+
+
 # ルーティング
 @app.before_request
 def before_request():
@@ -47,12 +75,12 @@ def index():
         </a>'''
     init_list = ""
 
-    if "login" in flask.session:
-        if flask.session["login"]["type"] == model.LOGIN_TYPE_TWITTER:
+    if UserInfo.is_login():
+        if UserInfo.get_login_type() == model.LOGIN_TYPE_TWITTER:
             loginout = '{0} <a href="./logout">ログアウト</a>'.format(
-                flask.session["login"]["display_name"])
+                UserInfo.get_user_display_name())
 
-        init_list = model.get_drink_list_by_html(flask.session["login"]["user_id"])
+        init_list = model.get_drink_list_by_html(UserInfo.get_user_id())
 
     return flask.render_template("index.html", loginout=loginout, initial_list=init_list)
 
@@ -92,9 +120,8 @@ def login_with_twitter_callback():
         user_id = model.add_user(new_user)
 
         # ログイン状態をセッションに保存
-        flask.session["login"] = {"user_id" : user_id,
-                                  "type" : new_user.login_type,
-                                  "display_name":verify["screen_name"]}
+        UserInfo.login(user_id, new_user.login_type, verify["screen_name"])
+
     except:
         app.logger.info("twitter login fail")
 
@@ -103,7 +130,7 @@ def login_with_twitter_callback():
 
 @app.route('/logout')
 def logout():
-    flask.session.pop('login', None) # ログイン状態を解除
+    UserInfo.logout() # ログイン状態を解除
     app.logger.info('You were signed out')
     return flask.redirect(flask.request.referrer or flask.url_for('index'))
 
@@ -111,12 +138,11 @@ def logout():
 @app.route("/api/add_drink", methods=["POST"])
 def api_add_drink():
     """ 管理する飲み物を追加する"""
-    if "login" in flask.session:
+    if UserInfo.is_login():
         if "drink_name" not in flask.request.form:
             return "invalid data", 400
-
         drink_name = urllib.parse.unquote(flask.request.form['drink_name'])
-        data_dict = model.append_drink_list(flask.session["login"]["user_id"], drink_name)
+        data_dict = model.append_drink_list(UserInfo.get_user_id(), drink_name)
         data_dict["name"] = drink_name
         return flask.jsonify(data_dict), 200
     else:
@@ -124,16 +150,17 @@ def api_add_drink():
         return "not login", 403
 
 
-@app.route("/api/drink/<drink_name>", methods=["PUT"])
-def put_drink(drink_name):
+@app.route("/api/drink/<drink_id>", methods=["PUT"])
+def put_drink(drink_id):
     """ 飲んだカウンターの上げ下げ """
     print("put_drink")
     count = int(flask.request.form['update_count'])
 
-    if "login" in flask.session:
-        print(flask.session["login"]["user_id"], drink_name, count)
+    if UserInfo.is_login():
 
-        if model.add_drink_history(flask.session["login"]["user_id"], drink_name, count):
+        print(UserInfo.get_user_id(), drink_id, count)
+
+        if model.add_drink_history(UserInfo.get_user_id(), drink_id, count):
             return "OK", 200
         else:
             app.logger.error("DB error")
@@ -147,8 +174,8 @@ def put_drink(drink_name):
 def get_drink_stat(drink_id):
     """飲んだ履歴の取得"""
 
-    if "login" in flask.session:
-        data = model.get_drink_history_stat(flask.session["login"]["user_id"], drink_id)
+    if UserInfo.is_login():
+        data = model.get_drink_history_stat(UserInfo.get_user_id(), drink_id)
         return data, 200
     else:
         return "not login", 400
