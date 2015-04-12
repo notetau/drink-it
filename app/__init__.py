@@ -100,12 +100,12 @@ def login_with_twitter_callback():
 
     return flask.redirect("/")
 
+
 @app.route('/logout')
 def logout():
     flask.session.pop('login', None) # ログイン状態を解除
     app.logger.info('You were signed out')
     return flask.redirect(flask.request.referrer or flask.url_for('index'))
-
 
 
 @app.route("/api/add_drink", methods=["POST"])
@@ -141,3 +141,16 @@ def put_drink(drink_name):
     else:
         # 非ログイン状態
         return "not login", 400
+
+
+@app.route("/api/<drink_id>/stat", methods=["GET"])
+def get_drink_stat(drink_id):
+    """飲んだ履歴の取得"""
+
+    if "login" in flask.session:
+        data = model.get_drink_history_stat(flask.session["login"]["user_id"], drink_id)
+        return data, 200
+    else:
+        return "not login", 400
+
+    return "[]", 200

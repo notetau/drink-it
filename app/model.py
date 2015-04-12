@@ -224,3 +224,39 @@ def add_drink_history(user_id, drink_name, count):
     finally:
         if db is not None:
             db.close()
+
+def get_drink_history_stat(user_id, drink_id, range_type="30day"):
+
+    stat = []
+    db = None
+    try:
+        db = make_session()
+        stat = db.query(History) \
+            .filter(History.user_id == user_id) \
+            .filter(History.drink_id == drink_id) \
+            .order_by(History.datetime).all()
+    finally:
+        if db is not None:
+            db.close()
+
+    def convert_daystr(dt):
+        return "{0:%Y-%m-%d}".format(dt)
+
+    columns = [ ["x"], ["count"], ]
+    now = datetime.datetime.now()
+    columns[0].extend([convert_daystr(now + datetime.timedelta(i)) for i in range(-29,1,1)])
+    columns[1].extend([0 for i in range(30)])
+    base_count = 0
+
+    for t in stat:
+        try:
+            idx = columns[0].index(convert_daystr(t.datetime))
+            columns[1][idx] += t.count
+        except ValueError:
+            base_count += t.count
+
+    columns[1][1] = columns[1][1] + base_count
+    for i in range(2,len(columns[1])):
+        columns[1][i] = columns[1][i] + columns[1][i-1]
+
+    return json.dumps(columns)

@@ -64,17 +64,20 @@
             return name
         }
 
-        function draw_drink_stat_graph() {
+        function draw_drink_stat_graph(columns) {
             var chart = c3.generate({
                 bindto: '#drink-chart',
                 data: {
-                    columns: [
-                        ['total', 30, 40, 100, 400, 550, 650],
-                    ],
-                    types: {
-                        total: "area",
-                    },
+                    x: "x",
+                    columns: columns,
+                    types: { count: "area", },
                 },
+                axis: {
+                    x: {
+                        type: "timeseries",
+                        tick: { format: "%Y-%m-%d" }
+                    }
+                }
             });
         }
 
@@ -91,7 +94,19 @@
             methods: {
                 show_graph: function() {
                     this.show_graph_flag = true;
-                    Vue.nextTick(draw_drink_stat_graph);
+                    //Vue.nextTick(draw_drink_stat_graph);
+
+                    var drink_id = 1;
+
+                    $.ajax({
+                        type: "GET",
+                        url: "api/" + drink_id + "/stat",
+                    }).done(function(data) {
+                        console.log("api/1/stat ==\n" + data);
+                        draw_drink_stat_graph(JSON.parse(data));
+                    }).fail(function(data) {
+                        alert("なんかエラーです。すんません。");
+                    });
                 },
                 hide_graph: function() {
                     this.show_graph_flag = false;
