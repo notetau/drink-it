@@ -19,9 +19,13 @@
 
     <div id="main_area"  data-v-cloak>
         <div id="stat-graph" data-v-if="show_graph_flag">
-            <button data-v-on="click: hide_graph">閉じる</button>
+            <div>
+                <button class="btn btn-drink btn-sm pull-right" data-v-on="click: hide_graph" >
+                    <i class="glyphicon glyphicon-remove"></i>閉じる
+                </button>
+            </div>
             <div data-v-pre>
-                <div id="drink-chart"></div>
+                <div id="drink-chart" class="text-center"></div>
             </div>
             <hr />
         </div>
@@ -94,17 +98,17 @@
                     color =  "#4EBEDD"
                     // easter egg
                     if (drink.name === "コーヒー") { color = "#7C584F"}
+                    $(".mg-area1-color").css("fill", color)
 
                     d3.json("api/" + drink_id + "/stat", function(data) {
                         data = MG.convert.date(data, "date");
                         MG.data_graphic({
                             title: drink.name + " [30 days]",
-                            //description: "test text",
                             data: data,
                             interpolate: 'basic',
                             width:600,
                             height:200,
-                            right:40,
+                            right:100,
                             target: document.getElementById("drink-chart"),
                             x_accessor: "date",
                             y_accessor: "count"
