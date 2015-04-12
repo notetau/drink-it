@@ -64,7 +64,7 @@
             return name
         }
 
-        function draw_graph() {
+        function draw_drink_stat_graph() {
             var chart = c3.generate({
                 bindto: '#drink-chart',
                 data: {
@@ -91,7 +91,7 @@
             methods: {
                 show_graph: function() {
                     this.show_graph_flag = true;
-                    Vue.nextTick(draw_graph);
+                    Vue.nextTick(draw_drink_stat_graph);
                 },
                 hide_graph: function() {
                     this.show_graph_flag = false;
