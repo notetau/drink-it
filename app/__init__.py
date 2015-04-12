@@ -67,7 +67,7 @@ def before_request():
 
 @app.route("/")
 def index():
-    """ トップページ　ログイン状態か否かで表示を変える """
+    """ トップページ """
     loginout = '''
         <a href="./login/twitter">
         <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
@@ -139,7 +139,7 @@ def api_add_new_drink():
 
 
 @app.route("/api/drink/<drink_id>", methods=["PUT"])
-def put_drink(drink_id):
+def api_put_drink(drink_id):
     """ 飲んだカウンターの上げ下げ """
     print("put_drink")
     count = int(flask.request.form['update_count'])
@@ -155,7 +155,7 @@ def put_drink(drink_id):
 
 
 @app.route("/api/<drink_id>/stat", methods=["GET"])
-def get_drink_stat(drink_id):
+def api_get_drink_stat(drink_id):
     """飲んだ履歴の取得"""
     if UserInfo.is_login():
         data = model.get_drink_history_stat(UserInfo.get_user_id(), drink_id)
@@ -166,7 +166,7 @@ def get_drink_stat(drink_id):
 
 
 @app.route("/api/all_drink_list", methods=["GET"])
-def get_all_drink_list():
+def api_get_all_drink_list():
     """飲み物一覧を取得 json format"""
     if UserInfo.is_login():
         all_drink = model.get_drink_list_by_json(UserInfo.get_user_id())
