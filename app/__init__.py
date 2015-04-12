@@ -68,8 +68,7 @@ def before_request():
 @app.route("/")
 def index():
     """ トップページ """
-    loginout = '''
-        <a href="./login/twitter">
+    loginout = '''<a href="./login/twitter">
         <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
         </a>'''
     if UserInfo.is_login():
