@@ -59,7 +59,6 @@ class UserInfo:
         return flask.session["login"]["user_id"]
 
 
-
 # ルーティング
 @app.before_request
 def before_request():
@@ -150,10 +149,9 @@ def put_drink(drink_id):
         if model.add_drink_history(UserInfo.get_user_id(), drink_id, count):
             return "OK", 200
         else:
-            app.logger.error("DB error")
-            return "db error", 400
+            return "internal error", 500
     else:
-        return "not login", 400
+        return "not login", 403
 
 
 @app.route("/api/<drink_id>/stat", methods=["GET"])
@@ -163,7 +161,7 @@ def get_drink_stat(drink_id):
         data = model.get_drink_history_stat(UserInfo.get_user_id(), drink_id)
         return data, 200
     else:
-        return "not login", 400
+        return "not login", 403
     return "[]", 200
 
 

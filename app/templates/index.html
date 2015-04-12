@@ -94,6 +94,9 @@
 
                     var drink_id = drink.drink_id;
 
+                    color =  "#4EBEDD"
+                    // easter egg
+                    if (drink.name === "コーヒー") { color = "#7C584F"}
                     $.ajax({
                         type: "GET",
                         url: "api/" + drink_id + "/stat",
@@ -105,8 +108,9 @@
                                 x: "x",
                                 columns: JSON.parse(data),
                                 types: { count: "line", },
+                                colors: { count: color },
                             },
-                            legend: { hide:true },
+                            legend: { hide: true },
                             axis: {
                                 x: {
                                     type: "timeseries",
@@ -158,7 +162,7 @@
                 },
 
                 add_new_drink: function() {
-                    var drink_name = validate_drink_name($("#add_input").val());
+                    var drink_name = $("#add_input").val();
                     if (!drink_name) { return; }
                     console.log(drink_name);
                     var data = {drink_name: drink_name};
