@@ -231,7 +231,8 @@ def get_drink_history_stat(user_id, drink_id, range_type="30day"):
     def convert_daystr(dt):
         return "{0:%Y-%m-%d}".format(dt)
 
-    columns = [ ["x"], ["count"], ]
+    #columns = [ ["x"], ["count"], ]
+    columns = [ [], [], ]
     now = datetime.datetime.now()
     columns[0].extend([convert_daystr(now + datetime.timedelta(i)) for i in range(-29,1,1)])
     columns[1].extend([0 for i in range(30)])
@@ -244,8 +245,12 @@ def get_drink_history_stat(user_id, drink_id, range_type="30day"):
         except ValueError:
             base_count += t.count
 
-    columns[1][1] = columns[1][1] + base_count
-    for i in range(2,len(columns[1])):
+    columns[1][0] = columns[1][0] + base_count
+    for i in range(1,len(columns[1])):
         columns[1][i] = columns[1][i] + columns[1][i-1]
 
-    return json.dumps(columns)
+    output = []
+    for i in range(len(columns[0])):
+        output.append({"date":columns[0][i], "count":columns[1][i]})
+
+    return json.dumps(output)

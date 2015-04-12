@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="./static/css/c3.min.css" />
+    <link rel="stylesheet" type="text/css" href="./static/css/metricsgraphics.css" />
     <link rel="stylesheet" type="text/css" href="./static/css/index_style.css" />
 </head>
 <body>
@@ -19,7 +19,6 @@
 
     <div id="main_area"  data-v-cloak>
         <div id="stat-graph" data-v-if="show_graph_flag">
-            (% name_graph_displayed %) [30 days]　<span data-v-show="graph_loading_flag">読み込み中</span>
             <button data-v-on="click: hide_graph">閉じる</button>
             <div data-v-pre>
                 <div id="drink-chart"></div>
@@ -57,7 +56,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="./static/js/c3.min.js"></script>
+    <script src="./static/js/metricsgraphics.min.js"></script>
     <script src="./static/js/vue.js">javascriptを有効にしてください</script>
     <script>
         Vue.config.prefix = "data-v-";
@@ -66,7 +65,6 @@
             el: "body",
             data: {
                 show_graph_flag: false,
-                graph_loading_flag: false,
                 name_graph_displayed: "",
                 login_flag: false,
                 drink_list: []
@@ -89,7 +87,6 @@
                 show_graph: function(drink) {
                     var self = this;
                     this.show_graph_flag = true;
-                    this.graph_loading_flag = true;
                     this.name_graph_displayed = drink.name;
 
                     var drink_id = drink.drink_id;
@@ -97,34 +94,21 @@
                     color =  "#4EBEDD"
                     // easter egg
                     if (drink.name === "コーヒー") { color = "#7C584F"}
-                    $.ajax({
-                        type: "GET",
-                        url: "api/" + drink_id + "/stat",
-                    }).done(function(data) {
-                        console.log("api/1/stat ==\n" + data);
-                        var chart = c3.generate({
-                            bindto: '#drink-chart',
-                            data: {
-                                x: "x",
-                                columns: JSON.parse(data),
-                                types: { count: "line", },
-                                colors: { count: color },
-                            },
-                            legend: { hide: true },
-                            axis: {
-                                x: {
-                                    type: "timeseries",
-                                    tick: { format: "%Y-%m-%d" }
-                                }
-                            },
-                            onrendered: function() {
-                                vm.$data.graph_loading_flag = false;
-                            }
+
+                    d3.json("api/" + drink_id + "/stat", function(data) {
+                        data = MG.convert.date(data, "date");
+                        MG.data_graphic({
+                            title: drink.name + " [30 days]",
+                            //description: "test text",
+                            data: data,
+                            interpolate: 'basic',
+                            width:600,
+                            height:200,
+                            right:40,
+                            target: document.getElementById("drink-chart"),
+                            x_accessor: "date",
+                            y_accessor: "count"
                         });
-                    }).fail(function(data) {
-                        self.show_graph_flag = false;
-                        self.graph_loading_flag = false;
-                        alert("なんかエラーです。すんません。");
                     });
                 },
                 hide_graph: function() {
