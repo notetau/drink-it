@@ -68,7 +68,7 @@ def before_request():
 
 @app.route("/")
 def index():
-    """ トップページ """
+    """トップページ"""
     login_flag = LoginUser.is_login()
     loginout = '''<a href="./login/twitter">
         <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
@@ -115,7 +115,7 @@ def login_with_twitter_callback():
         user_display_name = verify["screen_name"]
         app.logger.info("twitter login success({0},{1})".format(user_display_name, user_name))
         user_id = model.add_user(user_name, login_type)
-        # ログイン状態をセッションに保存
+
         LoginUser.login(user_id, login_type, user_display_name)
     except:
         app.logger.info("twitter login fail")
@@ -126,9 +126,10 @@ def login_with_twitter_callback():
 @app.route('/logout')
 def logout():
     """ログアウト"""
-    LoginUser.logout() # ログイン状態を解除
-    app.logger.info('You were signed out')
-    return flask.redirect(flask.request.referrer or flask.url_for('index'))
+    if LoginUser.is_login():
+        app.logger.info("logout: {0}".format(LoginUser.get_user_id()))
+        LoginUser.logout()
+    return flask.redirect(flask.request.referrer or flask.url_for("index"))
 
 
 @app.route("/api/add_new_drink", methods=["POST"])
@@ -147,7 +148,7 @@ def api_add_new_drink():
 
 @app.route("/api/drink/<drink_id>", methods=["PUT"])
 def api_put_drink(drink_id):
-    """ 飲んだカウンターの上げ下げ """
+    """飲んだカウンターの上げ下げ"""
     print("put_drink")
     count = int(flask.request.form['update_count'])
 
