@@ -149,12 +149,9 @@ def add_new_drink(user_id, drink_name):
                      filter(DrinkList.user_id == user_id)).one()[0]
         if max_index is None:
             max_index = 0
-        print("max_index ==", max_index)
-
         drink_list = DrinkList(user_id=user_id, drink_id=drink.drink_id, index=max_index+1)
         db.add(drink_list)
         db.commit()
-
         return {"status":"added", "drink_id": drink_list.drink_id, "index": drink_list.index}
     finally:
         if db is not None:
@@ -185,7 +182,7 @@ def get_drink_list_by_json(user_id):
                  "count":int(row[1]),
                  "index":int(row[2]),
                  "drink_id": int(row[3])})
-        print(json.dumps(ret_obj))
+
         return json.dumps(ret_obj)
     finally:
         if db is not None:
