@@ -194,7 +194,6 @@ def add_drink_history(user_id, drink_id, count):
     db = None
     try:
         db = make_session()
-        #drink_id = db.query(Drink.drink_id).filter(Drink.name == drink_name).first()[0]
         hist = History(
             user_id=user_id, drink_id=drink_id, count=count, datetime=datetime.datetime.now())
         db.add(hist)
