@@ -100,7 +100,7 @@ def login_with_twitter():
 
 @app.route("/login/twitter/callback")
 def login_with_twitter_callback():
-    """ TwitterのOauth認証の結果 """
+    """TwitterのOauth認証の結果"""
     try:
         app.logger.info("#### login_with_twitter_callback ####")
         request_token, request_token_secret = flask.session["twitter_oauth"]
@@ -123,6 +123,7 @@ def login_with_twitter_callback():
 
 @app.route('/logout')
 def logout():
+    """ログアウト"""
     UserInfo.logout() # ログイン状態を解除
     app.logger.info('You were signed out')
     return flask.redirect(flask.request.referrer or flask.url_for('index'))
@@ -166,12 +167,11 @@ def api_get_drink_stat(drink_id):
         return data, 200
     else:
         return "not login", 403
-    return "[]", 200
 
 
 @app.route("/api/all_drink_list", methods=["GET"])
 def api_get_all_drink_list():
-    """飲み物一覧を取得 json format"""
+    """飲み物一覧を取得"""
     if UserInfo.is_login():
         all_drink = model.get_drink_list_by_json(UserInfo.get_user_id())
         return all_drink, 200
