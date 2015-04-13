@@ -139,7 +139,7 @@ def api_add_new_drink():
         if "drink_name" not in flask.request.form:
             return "invalid data", 400
         drink_name = urllib.parse.unquote(flask.request.form['drink_name'])
-        data_dict = model.append_drink_list(LoginUser.get_user_id(), drink_name)
+        data_dict = model.add_new_drink(LoginUser.get_user_id(), drink_name)
         data_dict["name"] = drink_name
         return flask.jsonify(data_dict), 200
     else:

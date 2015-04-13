@@ -131,14 +131,12 @@ def _register_drink(name):
         if db is not None:
             db.close()
 
-def append_drink_list(user_id, drink_name):
+def add_new_drink(user_id, drink_name):
     """ 管理する飲み物を追加する
         戻り値: dict ["status"] <= "added" (今回追加した) or "already" (すでに存在する)
                 dict ["index"] <= 表示順を示す整数(1以上)
     """
-
     drink, is_new = _register_drink(drink_name)
-
     db = None
     try:
         db = make_session()
@@ -146,7 +144,7 @@ def append_drink_list(user_id, drink_name):
                                   .filter(DrinkList.drink_id == drink.drink_id)).first()
         if ret is not None:
             return {"status":"already"}
-
+        # 新しく追加するものは最後尾に
         max_index = (db.query(sql.func.max(DrinkList.index).label("max_index")).
                      filter(DrinkList.user_id == user_id)).one()[0]
         if max_index is None:
