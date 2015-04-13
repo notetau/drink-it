@@ -92,17 +92,14 @@ def _is_user_already_exists(name, login_type):
         if db is not None:
             db.close()
 
-def add_user(user):
+def add_user(name, login_type):
     """  user_id を返す """
-    if not isinstance(user, User):
-        app.logger.warning("adding invalid user (type error)")
-        raise Exception;
-
-    user_id = _is_user_already_exists(user.name, user.login_type)
+    user_id = _is_user_already_exists(name, login_type)
     if user_id == 0: # create new user
         db = None
         try:
             db = make_session()
+            user = User(name=name, login_type=login_type)
             db.add(user)
             db.commit()
             db.refresh(user) # user_id を手に入れる (user_id は auto increament)

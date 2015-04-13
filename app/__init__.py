@@ -34,17 +34,18 @@ model.model_init()
 
 class LoginUser:
     @staticmethod
-    def is_login():
-        return "login" in flask.session
-
-    @staticmethod
     def login(user_id, login_type, display_name):
-        flask.session["login"] = {"user_id" : user_id,
-                                  "type" : login_type,
-                                  "display_name" : display_name}
+        flask.session["login"] = {
+            "user_id" : user_id, "type" : login_type, "display_name" : display_name
+        }
+
     @staticmethod
     def logout():
         flask.session.pop('login', None)
+
+    @staticmethod
+    def is_login():
+        return "login" in flask.session
 
     @staticmethod
     def get_login_type():
@@ -108,11 +109,14 @@ def login_with_twitter_callback():
         params = {'oauth_verifier': flask.request.args['oauth_verifier']}
         sess = twitter.get_auth_session(params=params, **requests)
         verify = sess.get("account/verify_credentials.json").json()
-        app.logger.info("twitter login success({0},{1})".format(verify["screen_name"], verify["id"]))
-        new_user = model.User(name = str(verify["id"]), login_type = model.LOGIN_TYPE_TWITTER)
-        user_id = model.add_user(new_user)
+
+        login_type = model.LOGIN_TYPE_TWITTER
+        user_name = str(verify["id"])
+        user_display_name = verify["screen_name"]
+        app.logger.info("twitter login success({0},{1})".format(user_display_name, user_name))
+        user_id = model.add_user(user_name, login_type)
         # ログイン状態をセッションに保存
-        LoginUser.login(user_id, new_user.login_type, verify["screen_name"])
+        LoginUser.login(user_id, login_type, user_display_name)
     except:
         app.logger.info("twitter login fail")
 
