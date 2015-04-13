@@ -97,9 +97,6 @@
                     var drink_id = drink.drink_id;
 
                     color =  "#4EBEDD"
-                    // easter egg
-                    //if (drink.name === "コーヒー") { color = "#7C584F"}
-                    //$(".mg-area1-color").css("fill", color)
 
                     d3.json("api/" + drink_id + "/stat", function(data) {
                         data = MG.convert.date(data, "date");
