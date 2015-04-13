@@ -205,7 +205,33 @@ def add_drink_history(user_id, drink_id, count):
         if db is not None:
             db.close()
 
-def get_drink_history_stat(user_id, drink_id, range_type="30day"):
+def _generate_drink_history_stat_json(histories, range_type):
+    """飲んだ履歴グラフ用のjsonを生成する"""
+    if range_type == "30days":
+        def convert_daystr(dt):
+            return "{0:%Y-%m-%d}".format(dt)
+        now = datetime.datetime.now()
+        date_labels = [convert_daystr(now + datetime.timedelta(i)) for i in range(-29,1,1)]
+        acc_counts = [0 for _ in range(30)] #その日までの累積値
+        base_count = 0 # 30日前の時点の累積値
+
+        for t in histories:
+            try:
+                idx = date_labels.index(convert_daystr(t.datetime))
+                acc_counts[idx] += t.count
+            except ValueError:
+                base_count += t.count
+
+        acc_counts[0] = acc_counts[0] + base_count
+        for i in range(1, len(acc_counts)):
+            acc_counts[i] = acc_counts[i] + acc_counts[i-1]
+
+        output = [{"date":x[0], "count":x[1]} for x in zip(date_labels, acc_counts)]
+        return json.dumps(output)
+    else: # invalid range_type
+        return "[]" # empty
+
+def get_drink_history_stat(user_id, drink_id, range_type="30days"):
     """飲んだ履歴 json文字列を返す"""
     stat = []
     db = None
@@ -219,29 +245,4 @@ def get_drink_history_stat(user_id, drink_id, range_type="30day"):
         if db is not None:
             db.close()
 
-    def convert_daystr(dt):
-        return "{0:%Y-%m-%d}".format(dt)
-
-    #columns = [ ["x"], ["count"], ]
-    columns = [ [], [], ]
-    now = datetime.datetime.now()
-    columns[0].extend([convert_daystr(now + datetime.timedelta(i)) for i in range(-29,1,1)])
-    columns[1].extend([0 for i in range(30)])
-    base_count = 0
-
-    for t in stat:
-        try:
-            idx = columns[0].index(convert_daystr(t.datetime))
-            columns[1][idx] += t.count
-        except ValueError:
-            base_count += t.count
-
-    columns[1][0] = columns[1][0] + base_count
-    for i in range(1,len(columns[1])):
-        columns[1][i] = columns[1][i] + columns[1][i-1]
-
-    output = []
-    for i in range(len(columns[0])):
-        output.append({"date":columns[0][i], "count":columns[1][i]})
-
-    return json.dumps(output)
+    return _generate_drink_history_stat_json(stat, range_type)
