@@ -17,8 +17,8 @@
         </div>
     </div>
 
-    <div id="main_area"  data-v-cloak>
-        <div id="stat-graph" data-v-if="show_graph_flag">
+    <div id="main_area" data-v-cloak>
+        <div id="stat-graph" data-v-show="show_graph_flag">
             <div>
                 <button class="btn btn-drink btn-sm pull-right" data-v-on="click: hide_graph" >
                     <i class="glyphicon glyphicon-remove"></i>閉じる
@@ -70,10 +70,11 @@
             data: {
                 show_graph_flag: false,
                 name_graph_displayed: "",
-                login_flag: false,
+                login_flag: {{ login_flag }},
                 drink_list: []
             },
             ready: function() {
+                if (!this.login_flag) { return; }
                 var self = this;
                 $.ajax({
                     type: "GET",
@@ -97,8 +98,8 @@
 
                     color =  "#4EBEDD"
                     // easter egg
-                    if (drink.name === "コーヒー") { color = "#7C584F"}
-                    $(".mg-area1-color").css("fill", color)
+                    //if (drink.name === "コーヒー") { color = "#7C584F"}
+                    //$(".mg-area1-color").css("fill", color)
 
                     d3.json("api/" + drink_id + "/stat", function(data) {
                         data = MG.convert.date(data, "date");

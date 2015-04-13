@@ -68,15 +68,20 @@ def before_request():
 @app.route("/")
 def index():
     """ トップページ """
+
+    login_flag = UserInfo.is_login()
     loginout = '''<a href="./login/twitter">
         <img src="./static/img/sign-in-with-twitter-gray.png" alt="sign in with twitter"/>
         </a>'''
-    if UserInfo.is_login():
+    if login_flag:
         if UserInfo.get_login_type() == model.LOGIN_TYPE_TWITTER:
             loginout = '{0} <a href="./logout">ログアウト</a>'.format(
                 UserInfo.get_user_display_name())
+        else:
+            app.logger.warning("invalid access")
 
-    return flask.render_template("index.html", loginout=loginout)
+    login_flag = str(login_flag).lower() # convert to javascript boolean literal
+    return flask.render_template("index.html", loginout=loginout, login_flag=login_flag)
 
 
 @app.route("/login/twitter")
@@ -88,7 +93,7 @@ def login_with_twitter():
         request_token, request_token_secret = twitter.get_request_token()
         flask.session["twitter_oauth"] = (request_token, request_token_secret)
     except:
-        return "", 500
+        return "oauth error", 500
 
     return flask.redirect(twitter.get_authorize_url(request_token, **params))
 
@@ -171,4 +176,4 @@ def api_get_all_drink_list():
         all_drink = model.get_drink_list_by_json(UserInfo.get_user_id())
         return all_drink, 200
     else:
-        return "[]", 200
+        return "not login", 403
