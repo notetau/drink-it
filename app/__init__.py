@@ -149,11 +149,9 @@ def api_add_new_drink():
 @app.route("/api/drink/<drink_id>", methods=["PUT"])
 def api_put_drink(drink_id):
     """飲んだカウンターの上げ下げ"""
-    print("put_drink")
     count = int(flask.request.form['update_count'])
 
     if LoginUser.is_login():
-        print(LoginUser.get_user_id(), drink_id, count)
         if model.add_drink_history(LoginUser.get_user_id(), drink_id, count):
             return "OK", 200
         else:
